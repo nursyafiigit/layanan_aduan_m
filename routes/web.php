@@ -22,7 +22,7 @@ Route::get('loans/{id}/return', [LoanController::class, 'returnForm'])->name('lo
 // Route untuk memproses pengembalian buku
 Route::put('loans/{id}/return', [LoanController::class, 'returnBook'])->name('loans.return');
 
-
+Route::get('/members/search', [MemberController::class, 'search'])->name('members.search');
 Route::resource('members', MemberController::class);
 // Routes untuk Loan
 

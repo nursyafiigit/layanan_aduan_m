@@ -7,10 +7,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Library System</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+            @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
+  
 </head>
 
 <body class="bg-gray-100">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <div class="d-flex">
         <!-- Sidebar -->
         <div class="bg-dark text-white p-3" style="width: 250px; height: 100vh;">
