@@ -22,6 +22,9 @@
                 <li><a href="{{ route('loans.create') }}" class="text-white">Peminjaman Buku</a></li>
                 <li><a href="{{ route('members.index') }}" class="text-white">Anggota</a></li>
                 <li><a href="{{ route('loans.returnForm', ['id' => 1]) }}" class="text-white">Kembalikan Buku</a></li>
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
                 <!-- Menu kembalikan buku -->
             </ul>
         </div>
