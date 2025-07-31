@@ -9,20 +9,24 @@ use Illuminate\Http\Request;
 
 class MemberController extends Controller
 {
-    // Menampilkan daftar anggota
-    public function index()
-    {
-        $members = Member::all(); // Mengambil semua data anggota
-        return view('members.index', compact('members')); // Menampilkan data anggota di view
-    }
+    
+   public function index(Request $request)
+{
+    $limit = $request->input('limit', 5); 
 
-    // Menampilkan form untuk menambah anggota
+    $members = $limit === 'all' ? Member::all() : Member::take($limit)->get();
+
+    return view('members.index', compact('members', 'limit'));
+}
+
+
+
     public function create()
     {
-        return view('members.create'); // Menampilkan form untuk tambah anggota
+        return view('members.create'); 
     }
 
-    // Menyimpan data anggota baru
+    
     public function store(Request $request)
     {
         // Validasi data dari form
@@ -39,7 +43,7 @@ class MemberController extends Controller
             'phone_number' => $request->phone_number,
         ]);
 
-        
+
 
         // Redirect ke halaman daftar anggota setelah berhasil menambah
         return redirect()->route('members.index')->with('success', 'Anggota berhasil ditambahkan!');
@@ -88,4 +92,14 @@ class MemberController extends Controller
         // Redirect ke halaman daftar anggota setelah berhasil menghapus
         return redirect()->route('members.index')->with('success', 'Anggota berhasil dihapus!');
     }
+
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+
+        $members = Member::where('name', 'LIKE', '%' . $search . '%')->paginate(10);
+
+        return view('members.index', compact('members', 'search'));
+    }
+
 }

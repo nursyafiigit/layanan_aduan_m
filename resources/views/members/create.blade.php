@@ -3,19 +3,78 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+    .form-container {
+        max-width: 400px;
+        margin: 30px auto;
+        padding: 20px;
+    }
+
+    .form-container h1 {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 25px;
+        font-size: 16px;
+        outline: none;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus {
+        border-color: #6c63ff;
+    }
+
+    .form-group input::placeholder {
+        color: #999;
+    }
+
+    .btn-submit {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 25px;
+        background: linear-gradient(90deg, #9b4dff, #4a00e0);
+        color: #fff;
+        font-weight: bold;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .btn-submit:hover {
+        background: linear-gradient(90deg, #4a00e0, #9b4dff);
+    }
+</style>
+
+<div class="form-container">
     <h1>Tambah Anggota</h1>
     <form action="{{ route('members.store') }}" method="POST">
         @csrf
 
-        <label for="name">Nama:</label>
-        <input type="text" name="name" id="name" required><br><br>
+        <div class="form-group">
+            <input type="text" name="name" id="name" placeholder="Nama" required>
+        </div>
 
-        <label for="email">Email:</label>
-        <input type="email" name="email" id="email" required><br><br>
+        <div class="form-group">
+            <input type="email" name="email" id="email" placeholder="Email" required>
+        </div>
 
-        <label for="phone_number">Nomor Telepon:</label>
-        <input type="text" name="phone_number" id="phone_number" required><br><br>
+        <div class="form-group">
+            <input type="text" name="phone_number" id="phone_number" placeholder="Nomor Telepon" required>
+        </div>
 
-        <button type="submit">Simpan Anggota</button>
+        <button type="submit" class="btn-submit">Simpan Anggota</button>
     </form>
+</div>
 @endsection
