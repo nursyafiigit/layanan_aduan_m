@@ -24,7 +24,7 @@
                 <li class="mb-3"><a href="{{ route('dashboard') }}" class="text-white d-block p-2 rounded hover:bg-gray-700 text-decoration-none">Dashboard</a></li>
                 <li class="mb-3"><a href="{{ route('books.index') }}" class="text-white d-block p-2 rounded hover:bg-gray-700 text-decoration-none">Daftar Buku</a></li>
                 <li class="mb-3"><a href="{{ route('categories.index') }}" class="text-white d-block p-2 rounded hover:bg-gray-700 text-decoration-none">Kategori Buku</a></li>
-                <li class="mb-3"><a href="{{ route('loans.create') }}" class="text-white d-block p-2 rounded hover:bg-gray-700 text-decoration-none">Peminjaman Buku</a></li>
+                <li class="mb-3"><a href="{{ route('loans.index') }}" class="text-white d-block p-2 rounded hover:bg-gray-700 text-decoration-none">Peminjaman Buku</a></li>
                 <li class="mb-3"><a href="{{ route('members.index') }}" class="text-white d-block p-2 rounded hover:bg-gray-700 text-decoration-none">Anggota</a></li>
                 <li class="mb-3"><a href="{{ route('loans.history') }}" class="text-white d-block p-2 rounded hover:bg-gray-700 text-decoration-none">Riwayat Peminjaman</a></li>
                 

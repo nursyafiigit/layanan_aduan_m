@@ -13,39 +13,70 @@ class LoanController extends Controller
     // Method untuk menampilkan daftar peminjaman
     public function create()
     {
-        $books = Book::where('available', '>', 0)->get(); // Ambil buku yang tersedia
-        $members = Member::all(); // Ambil semua anggota
-        $loans = Loan::where('status', 'borrowed')->get(); // Ambil hanya peminjaman dengan status 'borrowed'
+        $members = Member::all(); // Get all members
+        $books = Book::all(); // Get all books
+        return view('loans.create', compact('members', 'books'));
+    }
+    public function edit($id)
+    {
+        $loan = Loan::findOrFail($id); // Menemukan data pinjaman berdasarkan ID
+        $members = Member::all(); // Mengambil semua data anggota
+        $books = Book::all(); // Mengambil semua data buku
 
-        return view('loans.create', compact('books', 'members', 'loans'));
+        return view('loans.edit', compact('loan', 'members', 'books')); // Mengirim data ke view edit
     }
 
-    // Menyimpan data peminjaman buku
-    public function store(Request $request)
+
+
+    public function update(Request $request, $id)
     {
-        $request->validate([
-            'book_id' => 'required',
-            'member_id' => 'required',
+        // Validasi input dari form
+        $validated = $request->validate([
+            'member_id' => 'required|exists:members,id',
+            'book_id' => 'required|exists:books,id',
             'loan_date' => 'required|date',
             'return_date' => 'required|date',
         ]);
 
-        // Create the loan record
-        Loan::create([
-            'book_id' => $request->book_id,
-            'member_id' => $request->member_id,
-            'loan_date' => $request->loan_date,
-            'return_date' => $request->return_date,
-            'status' => 'borrowed',
+        // Menemukan data pinjaman berdasarkan ID
+        $loan = Loan::findOrFail($id);
+
+        // Memperbarui data pinjaman
+        $loan->member_id = $request->member_id;
+        $loan->book_id = $request->book_id;
+        $loan->loan_date = $request->loan_date;
+        $loan->return_date = $request->return_date;
+        $loan->status = 'borrowed'; // Misalnya, status masih 'borrowed' setelah update
+        $loan->save(); // Menyimpan perubahan
+
+        // Mengarahkan kembali ke halaman daftar dengan pesan sukses
+        return redirect()->route('loans.index')->with('success', 'Peminjaman berhasil diperbarui!');
+    }
+
+
+
+    // Menyimpan data peminjaman buku
+    public function store(Request $request)
+    {
+        // Validasi input
+        $validated = $request->validate([
+            'member_id' => 'required|exists:members,id',
+            'book_id' => 'required|exists:books,id',
+            'loan_date' => 'required|date',
+            'return_date' => 'required|date',
         ]);
 
-        // Get updated loans to return to the frontend
-        $loans = Loan::with(['book', 'member'])->get(); // Or just filter to borrowed ones if needed
+        // Menyimpan data peminjaman
+        $loan = new Loan();
+        $loan->member_id = $request->member_id;
+        $loan->book_id = $request->book_id;
+        $loan->loan_date = $request->loan_date;
+        $loan->return_date = $request->return_date;
+        $loan->status = 'borrowed'; // Status peminjaman 'borrowed'
+        $loan->save();
 
-        return response()->json([
-            'status' => 'success',
-            'loans' => $loans
-        ]);
+        // Redirect ke halaman index dengan pesan sukses
+        return redirect()->route('loans.index')->with('success', 'Buku berhasil dipinjam!');
     }
 
 
@@ -77,12 +108,25 @@ class LoanController extends Controller
 
         return redirect()->route('loans.create')->with('success', 'Buku berhasil dikembalikan!');
     }
-
+    public function index()
+    {
+        // Fetch the loans and pass them to the view
+        $loans = Loan::with('member', 'book')->get(); // Eager load related data (member and book)
+        return view('loans.index', compact('loans'));
+    }
     public function history()
     {
         // Mengambil semua data peminjaman dengan status 'returned' (pengembalian)
         $loans = Loan::where('status', 'returned')->get();
 
         return view('loans.history', compact('loans'));
+    }
+
+    public function destroy($id)
+    {
+        $loan = Loan::findOrFail($id);
+        $loan->delete();
+
+        return redirect()->route('loans.index')->with('success', 'Peminjaman berhasil dihapus!');
     }
 }

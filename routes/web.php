@@ -21,7 +21,15 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    Route::put('/loans/{id}', [LoanController::class, 'update'])->name('loans.update'); // Update peminjaman
+    Route::get('/loans', [LoanController::class, 'index'])->name('loans.index');
+
+
     Route::get('loans/create', [LoanController::class, 'create'])->name('loans.create');
+    Route::get('/loans/{id}/edit', [LoanController::class, 'edit'])->name('loans.edit'); // Menampilkan form edit
+    Route::delete('loans/{id}', [LoanController::class, 'destroy'])->name('loans.destroy');
+
+
     Route::post('loans', [LoanController::class, 'store'])->name('loans.store');
     Route::get('loans/{id}/return', [LoanController::class, 'returnForm'])->name('loans.returnForm');
     Route::put('loans/{id}/return', [LoanController::class, 'returnBook'])->name('loans.return');
