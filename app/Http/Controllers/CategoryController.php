@@ -40,10 +40,15 @@ class CategoryController extends Controller
     // app/Http/Controllers/CategoryController.php
 
     public function destroy($id)
-    {
-        $category = Category::findOrFail($id);
-        $category->delete();
-        return redirect()->route('categories.index');
+    {   
+    $category = Category::findOrFail($id);
+
+    if ($category->books()->count() > 0) {
+        return redirect()->route('categories.index')->with('error', 'Kategori tidak bisa dihapus karena masih ada buku yang menggunakan kategori ini.');
+    }
+
+    $category->delete();
+    return redirect()->route('categories.index')->with('success', 'Kategori berhasil dihapus');
     }
     public function store(Request $request)
     {
