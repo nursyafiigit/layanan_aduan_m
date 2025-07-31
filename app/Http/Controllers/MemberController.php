@@ -44,6 +44,18 @@ class MemberController extends Controller
         // Redirect ke halaman daftar anggota setelah berhasil menambah
         return redirect()->route('members.index')->with('success', 'Anggota berhasil ditambahkan!');
     }
+    public function search(Request $request)
+    {
+        $term = $request->get('term');
+        $members = Member::where('name', 'LIKE', '%' . $term . '%')->get(['id', 'name']);
+        $result = [];
+
+        foreach ($members as $member) {
+            $result[] = ['value' => $member->id, 'label' => $member->name];
+        }
+
+        return response()->json($result);
+    }
 
     // Menampilkan form untuk mengedit data anggota
     public function edit($id)

@@ -17,34 +17,48 @@ class BookController extends Controller
 
     // app/Http/Controllers/BookController.php
 
-public function index(Request $request)
-{
-    $search = $request->get('search');
-    $categoryId = $request->get('category_id');
+    public function index(Request $request)
+    {
+        $search = $request->get('search');
+        $categoryId = $request->get('category_id');
 
-    $query = Book::with('category');
+        $query = Book::with('category');
 
-    // Filter pencarian
-    if ($search) {
-        $query->where('title', 'like', "%{$search}%")
-              ->orWhere('author', 'like', "%{$search}%")
-              ->orWhereHas('category', function ($q) use ($search) {
-                  $q->where('name', 'like', "%{$search}%");
-              });
+        // Filter pencarian
+        if ($search) {
+            $query->where('title', 'like', "%{$search}%")
+                ->orWhere('author', 'like', "%{$search}%")
+                ->orWhereHas('category', function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                });
+        }
+
+        // Filter berdasarkan kategori
+        if ($categoryId) {
+            $query->where('category_id', $categoryId);
+        }
+
+        // Pagination: menampilkan 10 buku per halaman
+        $books = $query->paginate(10);
+
+        $categories = Category::all();
+
+        return view('books.index', compact('books', 'categories'));
     }
 
-    // Filter berdasarkan kategori
-    if ($categoryId) {
-        $query->where('category_id', $categoryId);
+    public function search(Request $request)
+    {
+        $term = $request->get('term');
+        $books = Book::where('title', 'LIKE', '%' . $term . '%')->get(['id', 'title']);
+        $result = [];
+
+        foreach ($books as $book) {
+            $result[] = ['value' => $book->id, 'label' => $book->title];
+        }
+
+        return response()->json($result);
     }
 
-    // Pagination: menampilkan 10 buku per halaman
-    $books = $query->paginate(10);
-
-    $categories = Category::all();
-
-    return view('books.index', compact('books', 'categories'));
-}
 
 
 

@@ -40,7 +40,14 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        'admin' => [ // Add this block for the admin guard
+            'driver' => 'session',
+            'provider' => 'admins',
+        ],
     ],
+
+
 
     /*
     |--------------------------------------------------------------------------
@@ -62,14 +69,16 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\User::class),
+            'model' => App\Models\User::class,
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'admins' => [ // Add this block for the admin provider
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
+        ],
     ],
+
+
 
     /*
     |--------------------------------------------------------------------------

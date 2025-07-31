@@ -13,22 +13,28 @@
             @csrf
             <div class="form-group">
                 <label for="member_id">Anggota:</label>
-                <select name="member_id" id="member_id" class="form-control" required>
-                    <option value="">Pilih Anggota</option>
+                <input type="text" name="member_id" placeholder="Pilih" id="member_id" list="member" class="form-control"
+                    required>
+                <datalist id="member">
                     @foreach($members as $member)
-                        <option value="{{ $member->id }}">{{ $member->name }}</option>
+                        <option value="{{ $member->name }}">{{ $member->name }}</option>
                     @endforeach
-                </select>
+                </datalist>
+                </input>
+                
             </div>
 
             <div class="form-group">
                 <label for="book_id">Buku:</label>
-                <select name="book_id" id="book_id" class="form-control" required>
-                    <option value="">Pilih Buku</option>
+                <input type="text" name="book_id" placeholder="Cari Buku" list="buku" id="book_id" class="form-control"
+                    required>
+                <datalist id="buku">
+
                     @foreach($books as $book)
-                        <option value="{{ $book->id }}">{{ $book->title }}</option>
+                        <option value="{{ $book->title }}">{{ $book->title }}</option>
                     @endforeach
-                </select>
+                </datalist>
+                </input>
             </div>
 
             <div class="form-group">
@@ -48,21 +54,29 @@
         <table class="table table-bordered mt-3" id="loans-table">
             <thead>
                 <tr>
+                    <th>No</th>
                     <th>Nama Anggota</th>
                     <th>Judul Buku</th>
                     <th>Tanggal Peminjaman</th>
                     <th>Tanggal Pengembalian</th>
                     <th>Status</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($loans as $loan)
+                @foreach ($loans as $index => $loan)
                     <tr>
+                        <td>{{ $index + 1 }}</td> <!-- Nomor urut -->
                         <td>{{ $loan->member->name }}</td>
                         <td>{{ $loan->book->title }}</td>
                         <td>{{ $loan->loan_date }}</td>
                         <td>{{ $loan->return_date }}</td>
                         <td>{{ $loan->status }}</td>
+                        <td>
+                            @if($loan->status == 'borrowed')
+                                <a href="{{ route('loans.returnForm', $loan->id) }}" class="btn btn-warning">Atur Pengembalian</a>
+                            @endif
+                        </td>
                     </tr>
                 @endforeach
             </tbody>
@@ -90,11 +104,17 @@
                         var loansHtml = '';
                         $.each(response.loans, function (index, loan) {
                             loansHtml += '<tr>';
+                            loansHtml += '<td>' + (index + 1) + '</td>';
                             loansHtml += '<td>' + loan.member.name + '</td>';
                             loansHtml += '<td>' + loan.book.title + '</td>';
                             loansHtml += '<td>' + loan.loan_date + '</td>';
                             loansHtml += '<td>' + loan.return_date + '</td>';
                             loansHtml += '<td>' + loan.status + '</td>';
+                            loansHtml += '<td>';
+                            if (loan.status == 'borrowed') {
+                                loansHtml += '<a href="/loans/' + loan.id + '/return" class="btn btn-warning">Atur Pengembalian</a>';
+                            }
+                            loansHtml += '</td>';
                             loansHtml += '</tr>';
                         });
 
@@ -103,6 +123,11 @@
 
                         // Optionally reset the form
                         $('#loan-form')[0].reset();
+
+                        // Hide success message after a few seconds
+                        setTimeout(function () {
+                            $('#success-message').addClass('d-none');
+                        }, 5000);
                     }
                 }
             });

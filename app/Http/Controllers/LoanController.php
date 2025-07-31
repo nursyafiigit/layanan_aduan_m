@@ -11,59 +11,6 @@ use App\Models\Member;
 class LoanController extends Controller
 {
     // Method untuk menampilkan daftar peminjaman
-    public function index()
-    {
-        // Mengambil semua data peminjaman
-        $loans = Loan::all();
-        return view('loans.index', compact('loans')); // Menampilkan daftar peminjaman di view
-    }
-    // app/Http/Controllers/LoanController.php
-
-    // app/Http/Controllers/LoanController.php
-
-    public function returnBook(Request $request, $id)
-    {
-        // Menemukan peminjaman berdasarkan ID
-        $loan = Loan::findOrFail($id);
-
-        // Validasi tanggal pengembalian
-        $request->validate([
-            'actual_return_date' => 'required|date',
-        ]);
-
-        // Memperbarui status dan tanggal pengembalian
-        $loan->status = 'returned';  // Mengubah status menjadi 'returned'
-        $loan->actual_return_date = $request->actual_return_date;  // Menyimpan tanggal pengembalian
-        $loan->save();  // Menyimpan data peminjaman yang diperbarui
-
-        // Mengembalikan buku ke stok (menambahkan jumlah buku yang tersedia)
-        $book = Book::findOrFail($loan->book_id);
-        $book->increment('available');  // Menambahkan satu buku yang tersedia
-
-        return redirect()->route('loans.index')->with('success', 'Buku berhasil dikembalikan!');
-    }
-
-    public function returnForm($id)
-    {
-        // Menemukan peminjaman berdasarkan ID
-        $loan = Loan::findOrFail($id);
-
-        // Mengembalikan view dengan data peminjaman yang ditemukan
-        return view('loans.return', compact('loan'));
-    }
-
-
-
-
-
-
-    // Menampilkan form untuk peminjaman buku
-    // app/Http/Controllers/LoanController.php
-
-    // app/Http/Controllers/LoanController.php
-
-    // app/Http/Controllers/LoanController.php
-
     public function create()
     {
         $books = Book::where('available', '>', 0)->get(); // Ambil buku yang tersedia
@@ -73,6 +20,7 @@ class LoanController extends Controller
         return view('loans.create', compact('books', 'members', 'loans'));
     }
 
+    // Menyimpan data peminjaman buku
     public function store(Request $request)
     {
         $request->validate([
@@ -99,5 +47,42 @@ class LoanController extends Controller
             'status' => 'success',
             'loans' => $loans
         ]);
+    }
+
+    // Menampilkan form atur pengembalian
+    public function returnForm($id)
+    {
+        $loan = Loan::findOrFail($id);
+        return view('loans.return', compact('loan'));
+    }
+
+    // Proses pengembalian buku
+    public function returnBook(Request $request, $id)
+    {
+        $loan = Loan::findOrFail($id);
+
+        // Validasi tanggal pengembalian
+        $request->validate([
+            'actual_return_date' => 'required|date',
+        ]);
+
+        // Memperbarui status dan tanggal pengembalian
+        $loan->status = 'returned';
+        $loan->actual_return_date = $request->actual_return_date;
+        $loan->save();
+
+        // Menambahkan buku kembali ke stok
+        $book = Book::findOrFail($loan->book_id);
+        $book->increment('available');
+
+        return redirect()->route('loans.create')->with('success', 'Buku berhasil dikembalikan!');
+    }
+
+    public function history()
+    {
+        // Mengambil semua data peminjaman dengan status 'returned' (pengembalian)
+        $loans = Loan::where('status', 'returned')->get();
+
+        return view('loans.history', compact('loans'));
     }
 }

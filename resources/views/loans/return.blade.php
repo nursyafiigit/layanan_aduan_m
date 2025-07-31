@@ -1,21 +1,24 @@
-<!-- resources/views/loans/return.blade.php -->
-
 @extends('layouts.app')
 
 @section('content')
-    <div class="container bg-white p-4 shadow-sm rounded">
-        <h2 class="text-center mb-4">Kembalikan Buku</h2>
+    <div class="container">
+        <h2>Atur Pengembalian Buku</h2>
+
+        <!-- Alert untuk sukses -->
+        @if(session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
 
         <form action="{{ route('loans.return', $loan->id) }}" method="POST">
             @csrf
             @method('PUT')
 
-            <div class="form-group mb-3">
+            <div class="form-group">
                 <label for="actual_return_date">Tanggal Pengembalian:</label>
-                <input type="date" id="actual_return_date" name="actual_return_date" class="form-control" required>
+                <input type="date" name="actual_return_date" class="form-control" required>
             </div>
 
-            <button type="submit" class="btn btn-success">Kembalikan Buku</button>
+            <button type="submit" class="btn btn-primary">Kembalikan Buku</button>
         </form>
     </div>
 @endsection
