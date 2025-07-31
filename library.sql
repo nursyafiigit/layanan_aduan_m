@@ -229,9 +229,7 @@ INSERT INTO `members` (`id`, `name`, `email`, `phone_number`, `created_at`, `upd
 
 -- --------------------------------------------------------
 
---
--- Table structure for table `member_profiles`
---
+
 
 CREATE TABLE `member_profiles` (
   `id` bigint(20) UNSIGNED NOT NULL,

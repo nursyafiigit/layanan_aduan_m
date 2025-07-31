@@ -13,7 +13,14 @@ class Loan extends Model
     use HasFactory;
 
     // Kolom yang dapat diisi massal
-    protected $fillable = ['book_id', 'member_id', 'loan_date', 'return_date', 'status'];
+    protected $fillable = [
+        'book_id',
+        'member_id',
+        'loan_date',
+        'return_date',
+        'actual_return_date',
+        'status',
+    ];
 
     // Relasi ke model Book
     public function book()

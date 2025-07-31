@@ -1,109 +1,97 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container bg-white p-4 shadow-sm rounded">
-        <h2 class="text-center mb-4">Dashboard</h2>
+<div class="container bg-white p-3 shadow-sm rounded" style="height: 100vh; overflow: hidden;">
+    <h4 class="text-center mb-3">Dashboard</h4>
 
-        <div class="row mb-4">
-            <div class="col-md-4">
-                <div class="kartu card shadow text-white d-flex flex-row justify-content-between align-items-center px-5 py-4"
-                    style="background: linear-gradient(45deg,#36d1dc,#5b86e5);">
-                    <div>
-                        <h5 class="card-title mb-2">Jumlah Buku</h5>
-                        <p class="card-text display-6 fw-bold" style="font-size: 50px;">{{ $totalBooks }}</p>
-                    </div>
-                    <div>
-                        <img src="{{ asset('image/buku2.png') }}" alt="Buku" style="width:80px; height:80px;">
-                    </div>
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <div class="card shadow text-white d-flex flex-row justify-content-between align-items-center px-4 py-3"
+                style="background: linear-gradient(45deg,#36d1dc,#5b86e5); min-height: 100px;">
+                <div>
+                    <div class="fw-semibold small">Jumlah Buku</div>
+                    <div class="display-6 fw-bold" style="font-size: 28px;">{{ $totalBooks }}</div>
                 </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="kartu card shadow text-white d-flex flex-row justify-content-between align-items-center px-5 py-4" 
-                    style="background: linear-gradient(45deg,#8e2de2,#4a00e0);">
-                    <div class="card-body">
-                        <h5 class="card-title mb-2">Buku yang Tersedia</h5>
-                        <p class="card-text display-6 fw-bold">{{ $availableBooks }}</p>
-                    </div>
-                    <div>
-                        <img src="{{ asset('image/buku1.png') }}" alt="Buku1" style="width:70px; height:70px;">
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="kartu card shadow text-white d-flex flex-row justify-content-between align-items-center px-5 py-4" 
-                    style="background: linear-gradient(45deg,#ff416c,#ff4b2b);">
-                    <div class="card-body">
-                        <h5 class="card-title mb-2">Total Member</h5>
-                        <p class="card-text display-6 fw-bold">{{ $totalMembers }}</p>
-                    </div>
-                    <div>
-                        <img src="{{ asset('image/member.png') }}" alt="Buku1" style="width:100px; height:100px;">
-                    </div>
-                </div>
+                <img src="{{ asset('image/buku2.png') }}" alt="Buku" style="width:60px; height:60px;">
             </div>
         </div>
 
-        <!-- Grafik cok-->
-        <div class="card shadow">
-            <div class="card-body">
-                <h5 class="card-title">Grafik Peminjaman Buku Selama 1 Tahun</h5>
-                <canvas id="loanChart"></canvas>
+        <div class="col-md-4">
+            <div class="card shadow text-white d-flex flex-row justify-content-between align-items-center px-4 py-3"
+                style="background: linear-gradient(45deg,#8e2de2,#4a00e0); min-height: 100px;">
+                <div>
+                    <div class="fw-semibold small">Buku yang Tersedia</div>
+                    <div class="display-6 fw-bold" style="font-size: 28px;">{{ $availableBooks }}</div>
+                </div>
+                <img src="{{ asset('image/buku1.png') }}" alt="Buku1" style="width:55px; height:55px;">
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow text-white d-flex flex-row justify-content-between align-items-center px-4 py-3"
+                style="background: linear-gradient(45deg,#ff416c,#ff4b2b); min-height: 100px;">
+                <div>
+                    <div class="fw-semibold small">Total Member</div>
+                    <div class="display-6 fw-bold" style="font-size: 28px;">{{ $totalMembers }}</div>
+                </div>
+                <img src="{{ asset('image/member.png') }}" alt="Member" style="width:65px; height:65px;">
             </div>
         </div>
     </div>
 
-    <script>
-    var ctx = document.getElementById('loanChart').getContext('2d');
-    var loanChart = new Chart(ctx, {
-        data: {
-            labels: @json($months), // Bulan-bulan dalam tahun ini
-            datasets: [
-                // Dataset 1: Bar Chart
-                {
-                    type: 'bar',
-                    label: 'Jumlah Peminjaman',
-                    data: @json($loanCounts),
-                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
-                    borderRadius: 5,
-                    maxBarThickness: 40
-                },
-                // Dataset 2: Line Chart (Trend)
-                {
-                    type: 'line',
-                    label: 'Trend',
-                    data: @json($loanCounts),
-                    borderColor: '#ff4b4b',
-                    borderWidth: 2,
-                    fill: false,
-                    tension: 0.3,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: '#ff4b4b',
-                    pointRadius: 5,
-                    pointHoverRadius: 7
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { display: true, position: 'top' }
+   <div class="card shadow" style="height: 360px; overflow: hidden;">
+    <div class="card-body p-3 d-flex flex-column" style="height: 100%;">
+        <h6 class="card-title mb-2">Grafik Peminjaman Buku Selama 1 Tahun</h6>
+        <div style="flex-grow: 1;">
+            <canvas id="loanChart" class="w-100 h-100"></canvas>
+        </div>
+    </div>
+</div>
+
+</div>
+
+</div>
+
+<script>
+var ctx = document.getElementById('loanChart').getContext('2d');
+var loanChart = new Chart(ctx, {
+    data: {
+        labels: @json($months),
+        datasets: [
+            {
+                type: 'bar',
+                label: 'Jumlah Peminjaman',
+                data: @json($loanCounts),
+                backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                borderRadius: 5,
+                maxBarThickness: 30
             },
-            scales: {
-                x: { grid: { display: false } },
-                y: { grid: { color: '#f0f0f0' }, beginAtZero: true }
+            {
+                type: 'line',
+                label: 'Trend',
+                data: @json($loanCounts),
+                borderColor: '#ff4b4b',
+                borderWidth: 2,
+                fill: false,
+                tension: 0.3,
+                pointBackgroundColor: '#fff',
+                pointBorderColor: '#ff4b4b',
+                pointRadius: 4,
+                pointHoverRadius: 6
             }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: true, position: 'top' }
+        },
+        scales: {
+            x: { grid: { display: false } },
+            y: { grid: { color: '#f0f0f0' }, beginAtZero: true }
         }
-    });
+    }
+});
 </script>
-
 @endsection
-
-<style scoped>
-.kartu {
-    min-width: 400px;
-    max-height: 120px;
-    min-height: 120px;
-}
-</style>
