@@ -1,80 +1,61 @@
-<!-- resources/views/members/create.blade.php -->
-
 @extends('layouts.app')
 
 @section('content')
-<style>
-    .form-container {
-        max-width: 400px;
-        margin: 30px auto;
-        padding: 20px;
-    }
+    <div class="container">
+        <h2>Tambah Anggota</h2>
 
-    .form-container h1 {
-        text-align: center;
-        margin-bottom: 20px;
-        font-size: 28px;
-        font-weight: bold;
-    }
+        @if(session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
 
-    .form-group {
-        margin-bottom: 15px;
-    }
+        <!-- Form untuk mengirim data anggota -->
+        <form method="POST" action="{{ route('members.store') }}">
+            @csrf
 
-    .form-group input {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #ccc;
-        border-radius: 25px;
-        font-size: 16px;
-        outline: none;
-        transition: border-color 0.3s ease;
-    }
+            <div class="form-group">
+                <label for="name">Nama Anggota:</label>
+                <input type="text" name="name" id="name" class="form-control" placeholder="Nama Anggota" required>
+            </div>
 
-    .form-group input:focus {
-        border-color: #6c63ff;
-    }
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" name="email" id="email" class="form-control" placeholder="Email" required>
+            </div>
 
-    .form-group input::placeholder {
-        color: #999;
-    }
+            <div class="form-group">
+                <label for="phone_number">Nomor Telepon:</label>
+                <input type="text" name="phone_number" id="phone_number" class="form-control" placeholder="Nomor Telepon"
+                    required>
+            </div>
 
-    .btn-submit {
-        width: 100%;
-        padding: 12px;
-        border: none;
-        border-radius: 25px;
-        background: linear-gradient(90deg, #9b4dff, #4a00e0);
-        color: #fff;
-        font-weight: bold;
-        font-size: 16px;
-        cursor: pointer;
-        transition: background 0.3s ease;
-    }
+            <!-- Tambahkan data profil anggota -->
+            <div class="form-group">
+                <label for="address">Alamat:</label>
+                <input type="text" name="address" id="address" class="form-control" placeholder="Alamat" required>
+            </div>
 
-    .btn-submit:hover {
-        background: linear-gradient(90deg, #4a00e0, #9b4dff);
-    }
-</style>
+            <div class="form-group">
+                <label for="gender">Jenis Kelamin:</label>
+                <select name="gender" id="gender" class="form-control" required>
+                    <option value="">Pilih Jenis Kelamin</option>
+                    <option value="Laki-laki">Laki-laki</option>
+                    <option value="Perempuan">Perempuan</option>
+                </select>
+            </div>
 
-<div class="form-container">
-    <h1>Tambah Anggota</h1>
-    <form action="{{ route('members.store') }}" method="POST">
-        @csrf
+            <div class="form-group">
+                <label for="dob">Tanggal Lahir:</label>
+                <input type="date" name="dob" id="dob" class="form-control" required>
+            </div>
 
-        <div class="form-group">
-            <input type="text" name="name" id="name" placeholder="Nama" required>
-        </div>
+            <div class="form-group">
+                <label for="status_pendidikan">Status Pendidikan:</label>
+                <input type="text" name="status_pendidikan" id="status_pendidikan" class="form-control"
+                    placeholder="Status Pendidikan" required>
+            </div>
 
-        <div class="form-group">
-            <input type="email" name="email" id="email" placeholder="Email" required>
-        </div>
-
-        <div class="form-group">
-            <input type="text" name="phone_number" id="phone_number" placeholder="Nomor Telepon" required>
-        </div>
-
-        <button type="submit" class="btn-submit">Simpan Anggota</button>
-    </form>
-</div>
+            <!-- Tombol untuk mengirimkan form -->
+            <button type="submit" class="btn btn-primary">Simpan Anggota</button>
+        </form>
+    </div>
 @endsection

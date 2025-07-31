@@ -1,5 +1,6 @@
 <?php
 
+// app/Models/MemberProfile.php
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,10 +10,9 @@ class MemberProfile extends Model
 {
     use HasFactory;
 
-    // Tentukan kolom yang dapat diisi (fillable)
-    protected $fillable = ['member_id', 'address', 'status_pendidikan', 'gender', 'dob'];
+    protected $fillable = ['member_id', 'address', 'phone_number', 'gender', 'dob', 'status_pendidikan'];
 
-    // Relasi dengan model Member
+    // Relasi One-to-One dengan Member
     public function member()
     {
         return $this->belongsTo(Member::class);

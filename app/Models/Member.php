@@ -1,7 +1,6 @@
 <?php
 
 // app/Models/Member.php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,7 +10,11 @@ class Member extends Model
 {
     use HasFactory;
 
-    // Menambahkan kolom yang diizinkan untuk mass assignment
     protected $fillable = ['name', 'email', 'phone_number'];
+
+    // Relasi One-to-One dengan MemberProfile
+    public function profile()
+    {
+        return $this->hasOne(MemberProfile::class);
+    }
 }
-    

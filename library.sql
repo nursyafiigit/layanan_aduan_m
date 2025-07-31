@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 31, 2025 at 01:24 PM
+-- Generation Time: Jul 31, 2025 at 11:50 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -68,8 +68,8 @@ CREATE TABLE `books` (
 
 INSERT INTO `books` (`id`, `title`, `author`, `category_id`, `isbn`, `published_at`, `pages`, `available`, `created_at`, `updated_at`) VALUES
 (11, 'Mie Ayam', 'Aing', 8, '1231', '2221-12-12', 2222, 33, '2025-07-30 17:41:56', '2025-07-30 17:42:12'),
-(12, 'PKN', 'idrus', 9, '2222331', '2023-02-11', 200, 100, '2025-07-31 03:51:30', '2025-07-31 03:51:30'),
-(13, 'Cerita Nabi', 'Nur', 8, '9999', '2021-02-12', 321, 112, '2025-07-31 03:52:50', '2025-07-31 03:52:50');
+(12, 'PKN', 'idrus', 9, '2222331', '2023-02-11', 200, 101, '2025-07-31 03:51:30', '2025-07-31 05:02:37'),
+(13, 'Cerita Nabi', 'Nur', 8, '9999', '2021-02-12', 321, 113, '2025-07-31 03:52:50', '2025-07-31 14:22:15');
 
 -- --------------------------------------------------------
 
@@ -187,6 +187,19 @@ CREATE TABLE `loans` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `loans`
+--
+
+INSERT INTO `loans` (`id`, `book_id`, `member_id`, `loan_date`, `return_date`, `actual_return_date`, `status`, `created_at`, `updated_at`) VALUES
+(52, 13, 6, '2222-02-21', '2222-02-02', NULL, 'borrowed', '2025-07-31 13:39:09', '2025-07-31 13:39:09'),
+(53, 12, 6, '2222-02-12', '4444-04-12', NULL, 'borrowed', '2025-07-31 13:42:47', '2025-07-31 13:42:47'),
+(54, 12, 8, '2222-02-12', '4444-04-14', NULL, 'borrowed', '2025-07-31 13:50:39', '2025-07-31 13:50:39'),
+(55, 11, 5, '2222-02-12', '3333-03-13', NULL, 'borrowed', '2025-07-31 13:53:21', '2025-07-31 13:53:21'),
+(56, 11, 5, '2222-02-12', '0222-03-31', NULL, 'borrowed', '2025-07-31 13:53:46', '2025-07-31 13:53:46'),
+(57, 12, 10, '2222-02-12', '2233-02-14', NULL, 'borrowed', '2025-07-31 13:54:01', '2025-07-31 14:21:40'),
+(58, 13, 8, '5322-05-15', '5555-05-16', NULL, 'borrowed', '2025-07-31 13:54:39', '2025-07-31 13:54:39');
+
 -- --------------------------------------------------------
 
 --
@@ -217,6 +230,24 @@ INSERT INTO `members` (`id`, `name`, `email`, `phone_number`, `created_at`, `upd
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `member_profiles`
+--
+
+CREATE TABLE `member_profiles` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `member_id` bigint(20) UNSIGNED NOT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `phone_number` varchar(255) DEFAULT NULL,
+  `gender` varchar(255) DEFAULT NULL,
+  `dob` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `status_pendidikan` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `migrations`
 --
 
@@ -241,7 +272,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (11, '2025_07_29_201107_add_return_columns_to_loans_table', 4),
 (12, '2025_07_29_203831_alter_members_table', 5),
 (13, '2025_07_29_211058_alter_status_column_in_loans_table', 6),
-(14, '2025_07_30_230328_create_admins_table', 7);
+(14, '2025_07_30_230328_create_admins_table', 7),
+(15, '2025_07_31_183227_create_member_profiles_table', 8),
+(16, '2025_07_31_184007_update_member_profiles_table', 9);
 
 -- --------------------------------------------------------
 
@@ -275,7 +308,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('vpT1NtgVZTZvuZ7TWk1ZzB0DnrifDm2QHqqiRryM', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiYkV3M0o4d2F1bkdQR0JzYVJDWVpHdWRVdU91TzNsZm5zNW0wTVEzQSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzQ6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9sb2Fucy9jcmVhdGUiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjMxOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvZGFzaGJvYXJkIjt9fQ==', 1753960958);
+('jAEB2HqybxxEn3X9MjptapzXIvNn8RikkQtdiqvB', 4, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoibUNVUDdDNE9ZMVFKVmszNFBORjhlbWFOSVl5dzRWOEJiSFVZSFBPTyI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjE6e3M6MzoidXJsIjtzOjI3OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvbG9hbnMiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTo0O30=', 1753996947);
 
 -- --------------------------------------------------------
 
@@ -299,7 +332,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'nur', 'nur@exam.com', '0000-00-00 00:00:00', '123', '[value-6]', '0000-00-00 00:00:00', '0000-00-00 00:00:00');
+(1, 'nur', 'nur@exam.com', '0000-00-00 00:00:00', '123', '[value-6]', '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
+(3, 'John Doe', 'johndoe@example.com', NULL, 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', NULL, '2025-07-31 19:17:55', '2025-07-31 19:17:55'),
+(4, 'nurs', 'nur@example.com', NULL, '$2y$12$397PYjxgjUoHZDkQel5GEORC33dzMxBSHzdPFgZyNsdIIemZruk4O', NULL, '2025-07-31 12:21:51', '2025-07-31 12:21:51');
 
 --
 -- Indexes for dumped tables
@@ -372,6 +407,13 @@ ALTER TABLE `members`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `member_profiles`
+--
+ALTER TABLE `member_profiles`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `member_profiles_member_id_foreign` (`member_id`);
+
+--
 -- Indexes for table `migrations`
 --
 ALTER TABLE `migrations`
@@ -436,7 +478,7 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT for table `loans`
 --
 ALTER TABLE `loans`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
 
 --
 -- AUTO_INCREMENT for table `members`
@@ -445,16 +487,22 @@ ALTER TABLE `members`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
+-- AUTO_INCREMENT for table `member_profiles`
+--
+ALTER TABLE `member_profiles`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables
@@ -472,6 +520,12 @@ ALTER TABLE `books`
 ALTER TABLE `loans`
   ADD CONSTRAINT `loans_book_id_foreign` FOREIGN KEY (`book_id`) REFERENCES `books` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `loans_member_id_foreign` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `member_profiles`
+--
+ALTER TABLE `member_profiles`
+  ADD CONSTRAINT `member_profiles_member_id_foreign` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

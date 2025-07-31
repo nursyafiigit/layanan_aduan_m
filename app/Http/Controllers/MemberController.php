@@ -1,7 +1,5 @@
 <?php
 
-// app/Http/Controllers/MemberController.php
-
 namespace App\Http\Controllers;
 
 use App\Models\Member;
@@ -9,23 +7,40 @@ use Illuminate\Http\Request;
 
 class MemberController extends Controller
 {
-
     public function index(Request $request)
     {
-        $limit = $request->input('limit', 5);
+        $query = Member::with('profile'); // Load profile with each member
 
-        $members = $limit === 'all' ? Member::all() : Member::take($limit)->get();
+        // Pencarian berdasarkan nama atau email
+        if ($request->has('search') && $request->search) {
+            $query->where('name', 'LIKE', '%' . $request->search . '%')
+                ->orWhere('email', 'LIKE', '%' . $request->search . '%');
+        }
 
-        return view('members.index', compact('members', 'limit'));
+        // Filter berdasarkan gender
+        if ($request->has('gender') && $request->gender) {
+            $query->whereHas('profile', function ($q) use ($request) {
+                $q->where('gender', $request->gender);
+            });
+        }
+
+        // Filter berdasarkan status pendidikan
+        if ($request->has('status_pendidikan') && $request->status_pendidikan) {
+            $query->whereHas('profile', function ($q) use ($request) {
+                $q->where('status_pendidikan', $request->status_pendidikan);
+            });
+        }
+
+        // Fetch the members with pagination
+        $members = $query->paginate(10);
+
+        return view('members.index', compact('members'));
     }
-
-
 
     public function create()
     {
         return view('members.create');
     }
-
 
     public function store(Request $request)
     {
@@ -34,21 +49,30 @@ class MemberController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:members,email',
             'phone_number' => 'required|string',
+            'address' => 'nullable|string',
+            'gender' => 'nullable|string',
+            'dob' => 'nullable|date',
+            'status_pendidikan' => 'nullable|string',
         ]);
 
         // Menyimpan data anggota
-        Member::create([
+        $member = Member::create([
             'name' => $request->name,
             'email' => $request->email,
             'phone_number' => $request->phone_number,
         ]);
 
-
+        // Menyimpan data profile anggota yang baru
+        $member->profile()->create([
+            'address' => $request->address,
+            'gender' => $request->gender,
+            'dob' => $request->dob,
+            'status_pendidikan' => $request->status_pendidikan,
+        ]);
 
         // Redirect ke halaman daftar anggota setelah berhasil menambah
         return redirect()->route('members.index')->with('success', 'Anggota berhasil ditambahkan!');
     }
-
 
     // Menampilkan form untuk mengedit data anggota
     public function edit($id)
@@ -98,7 +122,9 @@ class MemberController extends Controller
     {
         $search = $request->input('search');
 
-        $members = Member::where('name', 'LIKE', '%' . $search . '%')->paginate(10);
+        $members = Member::where('name', 'LIKE', '%' . $search . '%')
+            ->orWhere('email', 'LIKE', '%' . $search . '%')
+            ->paginate(10);
 
         return view('members.index', compact('members', 'search'));
     }
