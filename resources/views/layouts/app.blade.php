@@ -11,44 +11,29 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-
 </head>
 
 <body class="bg-gray-100">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <div class="d-flex">
         <!-- Sidebar -->
-        <div class="bg-dark text-white p-3" style="width: 250px; height: 100vh;">
-            <h3 class="mb-4">Admin Dashboard</h3>
+        <div class="bg-dark text-white p-4" style="width: 250px; height: 100vh; box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);">
+            <h3 class="mb-4 text-center">Admin Dashboard</h3>
             <ul class="list-unstyled">
-                <li><a href="{{ route('dashboard') }}" class="text-white">Dashboard</a></li>
-                <li><a href="{{ route('books.index') }}" class="text-white">Daftar Buku</a></li>
-                <li><a href="{{ route('categories.index') }}" class="text-white">Kategori Buku</a></li>
-                <li><a href="{{ route('loans.create') }}" class="text-white">Peminjaman Buku</a></li>
-                <li><a href="{{ route('members.index') }}" class="text-white">Anggota</a></li>
-                <<<<<<< HEAD <li><a href="{{ route('loans.history') }}" class="text-white">Riwayat Peminjaman</a></li>
-                    <li>
-                        <form action="{{ route('admin.logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn btn-danger w-100">Logout</button>
-                        </form>
-                    </li>
-                    =======
-                    <li><a href="{{ route('loans.returnForm', ['id' => 1]) }}" class="text-white">Kembalikan Buku</a>
-                    </li>
-                    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
-                        rel="stylesheet">
-                    <link rel="stylesheet"
-                        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-
-                    >>>>>>> d162f395aa78b5419c62ab3580d0ecfeab073e7a
-                    <!-- Menu kembalikan buku -->
+                <!-- Sidebar links -->
+                <li class="mb-3"><a href="{{ route('dashboard') }}" class="text-white d-block p-2 rounded hover:bg-gray-700 text-decoration-none">Dashboard</a></li>
+                <li class="mb-3"><a href="{{ route('books.index') }}" class="text-white d-block p-2 rounded hover:bg-gray-700 text-decoration-none">Daftar Buku</a></li>
+                <li class="mb-3"><a href="{{ route('categories.index') }}" class="text-white d-block p-2 rounded hover:bg-gray-700 text-decoration-none">Kategori Buku</a></li>
+                <li class="mb-3"><a href="{{ route('loans.create') }}" class="text-white d-block p-2 rounded hover:bg-gray-700 text-decoration-none">Peminjaman Buku</a></li>
+                <li class="mb-3"><a href="{{ route('members.index') }}" class="text-white d-block p-2 rounded hover:bg-gray-700 text-decoration-none">Anggota</a></li>
+                <li class="mb-3"><a href="{{ route('loans.history') }}" class="text-white d-block p-2 rounded hover:bg-gray-700 text-decoration-none">Riwayat Peminjaman</a></li>
+                
+                <!-- Logout button -->
+              
             </ul>
         </div>
 
-        <!-- Konten Dashboard -->
+        <!-- Main Content Area -->
         <div class="container-fluid p-4" style="flex: 1;">
             @yield('content')
         </div>

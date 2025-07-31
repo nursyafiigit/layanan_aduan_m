@@ -24,30 +24,30 @@ class LoanController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'book_id' => 'required|exists:books,id',
-            'member_id' => 'required|exists:members,id',
+            'book_id' => 'required',
+            'member_id' => 'required',
             'loan_date' => 'required|date',
             'return_date' => 'required|date',
         ]);
 
-        // Menyimpan data peminjaman
+        // Create the loan record
         Loan::create([
             'book_id' => $request->book_id,
             'member_id' => $request->member_id,
             'loan_date' => $request->loan_date,
             'return_date' => $request->return_date,
-            'status' => 'borrowed',  // Statusnya adalah 'borrowed'
+            'status' => 'borrowed',
         ]);
 
-        // Ambil data terbaru untuk ditampilkan
-        $loans = Loan::where('status', 'borrowed')->get();
+        // Get updated loans to return to the frontend
+        $loans = Loan::with(['book', 'member'])->get(); // Or just filter to borrowed ones if needed
 
-        // Kembalikan response dengan data terbaru
         return response()->json([
             'status' => 'success',
             'loans' => $loans
         ]);
     }
+
 
     // Menampilkan form atur pengembalian
     public function returnForm($id)

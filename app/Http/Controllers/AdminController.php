@@ -2,36 +2,34 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Admin;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
-    // Show the login form
+    // Method to show the login form
     public function showLoginForm()
     {
-        return view('auth.admin-login');  // make sure you have this view for the login form
+        return view('auth.login'); // Assuming you have a login view for admin
     }
 
-    // Handle the login
+    // Method for admin login
     public function login(Request $request)
     {
-        // Validate the login form
-        $credentials = $request->only('username', 'password');
-
-        if (Auth::guard('admin')->attempt($credentials)) {
-            // Authentication passed
-            return redirect()->intended('/admin/dashboard');
-        }
-
-        // If authentication fails, redirect back with error message
-        return back()->with('error', 'Invalid credentials');
+        // Add login logic, like checking credentials, etc.
     }
 
-    public function logout(Request $request)
+    // Method for showing the admin dashboard
+    public function showDashboard()
     {
-        Auth::logout();
-        return redirect()->route('login');
+        // Make sure you pass any data to the dashboard if needed
+        return view('admin.dashboard');
     }
+
+    // Method for logout
+    public function logout(Request $request)
+{
+    auth('admin')->logout(); // Log out using the admin guard
+    return redirect()->route('admin.login'); // Redirect to the login page
+}
+
 }
