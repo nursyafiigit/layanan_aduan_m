@@ -49,7 +49,7 @@
                         </div>
                         <div class="d-flex flex-column gap-2">
                             <a href="{{ route('categories.edit', $category->id) }}"
-                                class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center"
+                                class="btn btn-warning btn-sm d-flex align-items-center justify-content-center"
                                 style="border-radius: 1.5rem; width: 100px;">
                                 <i class="bi bi-pencil-square me-1"></i> Edit
                             </a>
