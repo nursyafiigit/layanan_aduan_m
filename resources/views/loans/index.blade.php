@@ -11,5 +11,5 @@
                 <a href="{{ route('loans.returnForm', $loan->id) }}" class="btn btn-warning btn-sm">Atur Pengembalian</a>
             @endif
         </td>
-    </tr>
+    </tr> 
 @endforeach
