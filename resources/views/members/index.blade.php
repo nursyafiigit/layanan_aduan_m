@@ -50,10 +50,10 @@
                         <th>Nama</th>
                         <th>Email</th>
                         <th>Nomor Telepon</th>
-                        <th>Umur</th>
+
                         <th>Jenis Kelamin</th>
-                        <th>Status Pendidikan</th>
-                        <th>Alamat</th>
+                     
+                
                         <th style="width: 160px;">Aksi</th>
                     </tr>
                 </thead>
@@ -64,16 +64,10 @@
                             <td>{{ $member->name }}</td>
                             <td>{{ $member->email }}</td>
                             <td>{{ $member->phone_number }}</td>
-                            <td class="text-center">
-                                @php
-                                    $dob = \Carbon\Carbon::parse($member->profile->dob);
-                                    $age = $dob->diffInYears(\Carbon\Carbon::now());
-                                @endphp
-                                {{ $age }} Tahun
-                            </td>
+                            
                             <td class="text-center">{{ $member->profile->gender }}</td>
-                            <td class="text-center">{{ $member->profile->status_pendidikan }}</td>
-                            <td>{{ $member->profile->address }}</td>
+                        
+                          
                             <td class="text-center">
                                 <div class="d-flex flex-column align-items-center gap-2">
                                     <a href="{{ route('members.edit', $member->id) }}"

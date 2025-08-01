@@ -22,20 +22,19 @@
                 </button>
             </div>
         </form>
+
         {{-- Tabel Peminjaman --}}
         <div class="table-responsive shadow-sm rounded-4 overflow-hidden">
-            <table class="table table-bordered table-hover align-middle text-nowrap mb-0"
-                style="border-collapse: separate; border-spacing: 0;">
+            <table class="table table-bordered table-hover align-middle text-nowrap mb-0" style="table-layout: fixed;">
                 <thead class="table-light text-center">
                     <tr>
-                        <th style="border-left-top-radius: 1rem;">No</th>
-                        <th>Nama</th>
-                        <th>Judul buku</th>
-                        <th>Tanggal peminjaman</th>
-                        <th>Tanggal pengembalian</th>
-                        <th>Status</th>
-                        <th style="border-right-top-radius: 1rem">No</th>
-                        <!-- dst... -->
+                        <th style="width: 40px; border-left-top-radius: 1rem;">No</th>
+                        <th style="width: 150px;">Nama</th>
+                        <th style="width: 200px;">Judul buku</th>
+                        <th style="width: 150px;">Tanggal peminjaman</th>
+                        <th style="width: 150px;">Tanggal pengembalian</th>
+                        <th style="width: 120px;">Status</th>
+                        <th style="width: 160px; border-right-top-radius: 1rem;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
