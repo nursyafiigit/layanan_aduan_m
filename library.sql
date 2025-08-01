@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 01, 2025 at 01:57 AM
+-- Generation Time: Aug 01, 2025 at 11:47 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -21,6 +21,59 @@ SET time_zone = "+00:00";
 -- Database: `library`
 --
 
+DELIMITER $$
+--
+-- Procedures
+--
+CREATE DEFINER=`root`@`localhost` PROCEDURE `show_all_members` ()   BEGIN
+    SELECT * FROM members;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `total_loan_pages_by_member` (IN `p_member_id` BIGINT, OUT `total_pages` INT)   BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE book_id_val BIGINT;
+    DECLARE page_val INT;
+    DECLARE total INT DEFAULT 0;
+
+    DECLARE cur CURSOR FOR
+        SELECT b.id, b.pages
+        FROM loans l
+        JOIN books b ON l.book_id = b.id
+        WHERE l.member_id = p_member_id;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    OPEN cur;
+    read_loop: LOOP
+        FETCH cur INTO book_id_val, page_val;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+        SET total = total + page_val;
+    END LOOP;
+    CLOSE cur;
+    SET total_pages = total;
+END$$
+
+--
+-- Functions
+--
+CREATE DEFINER=`root`@`localhost` FUNCTION `count_books_by_category` (`cat_id` INT, `min_pages` INT) RETURNS INT(11) DETERMINISTIC BEGIN
+    DECLARE total INT;
+    SELECT COUNT(*) INTO total
+    FROM books
+    WHERE category_id = cat_id AND pages >= min_pages;
+    RETURN total;
+END$$
+
+CREATE DEFINER=`root`@`localhost` FUNCTION `total_books` () RETURNS INT(11) DETERMINISTIC BEGIN
+    DECLARE total INT;
+    SELECT COUNT(*) INTO total FROM books;
+    RETURN total;
+END$$
+
+DELIMITER ;
+
 -- --------------------------------------------------------
 
 --
@@ -34,6 +87,23 @@ CREATE TABLE `admins` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `audit_log`
+--
+
+CREATE TABLE `audit_log` (
+  `id` int(11) NOT NULL,
+  `action` varchar(20) DEFAULT NULL,
+  `table_name` varchar(100) DEFAULT NULL,
+  `affected_row_id` int(11) DEFAULT NULL,
+  `changed_at` datetime DEFAULT current_timestamp(),
+  `changed_by` varchar(100) DEFAULT NULL,
+  `old_data` text DEFAULT NULL,
+  `new_data` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -700,7 +770,7 @@ INSERT INTO `books` (`id`, `title`, `author`, `category_id`, `isbn`, `published_
 (652, 'Rerum consequatur.', 'Lelia Cassin', 14, '9795512900610', '1984-03-01', 668, 20, '2025-07-31 16:16:11', '2025-07-31 16:16:11'),
 (653, 'Dolorum consectetur aliquam.', 'Bruce Treutel', 28, '9795293505851', '2004-02-28', 878, 7, '2025-07-31 16:16:11', '2025-07-31 16:16:11'),
 (654, 'Doloremque magni itaque.', 'Faye Douglas', 22, '9783183500369', '2018-11-26', 186, 28, '2025-07-31 16:16:11', '2025-07-31 16:16:11'),
-(655, 'Neque doloremque consectetur.', 'Dr. Haylie Wilderman', 33, '9796083680109', '2002-02-06', 960, 67, '2025-07-31 16:16:11', '2025-07-31 16:16:11'),
+(655, 'Neque doloremque consectetur.', 'Dr. Haylie Wilderman', 33, '9796083680109', '2002-02-06', 960, 68, '2025-07-31 16:16:11', '2025-07-31 16:16:11'),
 (656, 'Ipsa ut incidunt nostrum.', 'Kathryn Effertz', 13, '9784717523250', '2014-09-20', 172, 20, '2025-07-31 16:16:11', '2025-07-31 16:16:11'),
 (657, 'In modi nisi esse sunt.', 'Jeremie Blick', 30, '9780626235659', '1987-05-03', 526, 41, '2025-07-31 16:16:11', '2025-07-31 16:16:11'),
 (658, 'Enim voluptatem rerum et.', 'Prof. Johnson Pfannerstill DVM', 19, '9798274128865', '1977-08-04', 622, 29, '2025-07-31 16:16:11', '2025-07-31 16:16:11'),
@@ -1550,7 +1620,6 @@ INSERT INTO `books` (`id`, `title`, `author`, `category_id`, `isbn`, `published_
 (1499, 'Nihil qui temporibus.', 'Elenora Stehr MD', 17, '9790807178330', '2018-12-15', 461, 1, '2025-07-31 16:16:14', '2025-07-31 16:16:14'),
 (1500, 'Voluptate placeat quas omnis.', 'Prof. Izabella Pollich', 22, '9782152189741', '1980-10-23', 92, 31, '2025-07-31 16:16:14', '2025-07-31 16:16:14'),
 (1501, 'Dolore autem et earum.', 'Miss Savanna Hill DVM', 27, '9793496382828', '1995-09-25', 141, 19, '2025-07-31 16:16:14', '2025-07-31 16:16:14'),
-(1502, 'Illo rerum ducimus.', 'Prof. Carmelo Corwin', 29, '9795277570516', '1988-01-26', 90, 86, '2025-07-31 16:16:14', '2025-07-31 16:16:14'),
 (1503, 'Consequatur provident voluptates laboriosam.', 'Shane Bauch', 26, '9789530612303', '1990-06-05', 794, 17, '2025-07-31 16:16:14', '2025-07-31 16:16:14'),
 (1504, 'Ut laboriosam nesciunt est eum.', 'Mr. Eldon Kautzer', 16, '9797008431660', '2023-07-11', 226, 9, '2025-07-31 16:16:14', '2025-07-31 16:16:14'),
 (1505, 'Commodi rerum totam quia.', 'Prof. George Weber', 33, '9795596455754', '2005-03-20', 949, 92, '2025-07-31 16:16:14', '2025-07-31 16:16:14'),
@@ -1563,7 +1632,38 @@ INSERT INTO `books` (`id`, `title`, `author`, `category_id`, `isbn`, `published_
 (1512, 'Nam praesentium neque.', 'Ivah Buckridge', 14, '9797268092700', '2000-01-04', 879, 5, '2025-07-31 16:16:14', '2025-07-31 16:16:14'),
 (1513, 'Commodi natus.', 'Dr. Demarcus Thiel Sr.', 34, '9796427450276', '1973-03-12', 526, 72, '2025-07-31 16:16:14', '2025-07-31 16:16:14'),
 (1514, 'Aut consequatur numquam.', 'Sandra Feest', 18, '9781651584101', '1983-11-05', 401, 38, '2025-07-31 16:16:14', '2025-07-31 16:16:14'),
-(1515, 'Voluptas ducimus ipsa dolores.', 'Rosanna Breitenberg', 19, '9794203656232', '2024-08-22', 547, 0, '2025-07-31 16:16:14', '2025-07-31 16:16:14');
+(1515, 'Voluptas ducimus ipsa dolores.', 'Rosanna Breitenberg', 19, '9794203656232', '2024-08-22', 547, 0, '2025-07-31 16:16:14', '2025-07-31 16:16:14'),
+(1516, 'Sains Dan Tech', 'Nur ikhsan Ahmad', 13, NULL, NULL, NULL, 100, NULL, NULL);
+
+--
+-- Triggers `books`
+--
+DELIMITER $$
+CREATE TRIGGER `after_update_book` AFTER UPDATE ON `books` FOR EACH ROW BEGIN
+    -- Menambahkan log audit ketika data buku diperbarui
+    INSERT INTO audit_log (action, table_name, record_id, old_data, new_data, change_date)
+    VALUES ('UPDATE', 'books', OLD.id,
+            CONCAT('Title: ', OLD.title, ', Author: ', OLD.author, ', ISBN: ', OLD.isbn),
+            CONCAT('Title: ', NEW.title, ', Author: ', NEW.author, ', ISBN: ', NEW.isbn), NOW());
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `before_delete_book` BEFORE DELETE ON `books` FOR EACH ROW BEGIN
+    IF EXISTS (SELECT 1 FROM loans WHERE book_id = OLD.id AND status = 'borrowed') THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Buku ini tidak dapat dihapus karena masih dipinjam';
+    END IF;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `before_insert_book` BEFORE INSERT ON `books` FOR EACH ROW BEGIN
+    IF EXISTS (SELECT 1 FROM books WHERE isbn = NEW.isbn) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Buku dengan ISBN ini sudah ada.';
+    END IF;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -1724,7 +1824,6 @@ INSERT INTO `loans` (`id`, `book_id`, `member_id`, `loan_date`, `return_date`, `
 (169, 508, 86, '2025-05-03', '2025-05-10', '2025-05-08', 'returned', '2025-07-31 16:34:07', '2025-07-31 16:34:07'),
 (170, 249, 48, '2023-09-05', '2023-09-12', NULL, 'borrowed', '2025-07-31 16:34:07', '2025-07-31 16:34:07'),
 (171, 364, 71, '2025-02-19', '2025-02-26', NULL, 'borrowed', '2025-07-31 16:34:07', '2025-07-31 16:34:07'),
-(172, 1502, 88, '2025-07-05', '2025-07-12', '2025-07-05', 'late', '2025-07-31 16:34:07', '2025-07-31 16:34:07'),
 (173, 1504, 109, '2025-03-10', '2025-03-17', NULL, 'borrowed', '2025-07-31 16:34:07', '2025-07-31 16:34:07'),
 (174, 265, 53, '2023-10-01', '2023-10-08', NULL, 'borrowed', '2025-07-31 16:34:07', '2025-07-31 16:34:07'),
 (175, 754, 31, '2024-08-22', '2024-08-29', '2024-08-27', 'late', '2025-07-31 16:34:07', '2025-07-31 16:34:07'),
@@ -1986,7 +2085,6 @@ INSERT INTO `loans` (`id`, `book_id`, `member_id`, `loan_date`, `return_date`, `
 (431, 1079, 68, '2024-04-11', '2024-04-18', '2024-04-18', 'late', '2025-07-31 16:34:07', '2025-07-31 16:34:07'),
 (432, 171, 31, '2023-11-14', '2023-11-21', '2023-11-19', 'late', '2025-07-31 16:34:07', '2025-07-31 16:34:07'),
 (433, 762, 20, '2024-02-07', '2024-02-14', '2024-02-08', 'late', '2025-07-31 16:34:07', '2025-07-31 16:34:07'),
-(434, 1502, 71, '2024-02-04', '2024-02-11', '2024-02-10', 'returned', '2025-07-31 16:34:07', '2025-07-31 16:34:07'),
 (435, 911, 114, '2023-08-13', '2023-08-20', NULL, 'borrowed', '2025-07-31 16:34:07', '2025-07-31 16:34:07'),
 (436, 1220, 26, '2025-07-27', '2025-08-03', NULL, 'borrowed', '2025-07-31 16:34:07', '2025-07-31 16:34:07'),
 (437, 1146, 101, '2023-10-04', '2023-10-11', '2023-10-07', 'returned', '2025-07-31 16:34:07', '2025-07-31 16:34:07'),
@@ -2163,10 +2261,10 @@ INSERT INTO `loans` (`id`, `book_id`, `member_id`, `loan_date`, `return_date`, `
 (608, 810, 67, '2025-02-10', '2025-02-17', NULL, 'borrowed', '2025-07-31 16:34:08', '2025-07-31 16:34:08'),
 (609, 1156, 68, '2025-04-09', '2025-04-16', '2025-04-10', 'returned', '2025-07-31 16:34:08', '2025-07-31 16:34:08'),
 (610, 425, 71, '2023-10-06', '2023-10-13', '2023-10-07', 'late', '2025-07-31 16:34:08', '2025-07-31 16:34:08'),
-(611, 75, 116, '2024-12-06', '2024-12-13', NULL, 'borrowed', '2025-07-31 16:34:08', '2025-07-31 16:34:08');
-INSERT INTO `loans` (`id`, `book_id`, `member_id`, `loan_date`, `return_date`, `actual_return_date`, `status`, `created_at`, `updated_at`) VALUES
+(611, 75, 116, '2024-12-06', '2024-12-13', NULL, 'borrowed', '2025-07-31 16:34:08', '2025-07-31 16:34:08'),
 (612, 1114, 109, '2024-08-24', '2024-08-31', '2024-08-30', 'late', '2025-07-31 16:34:08', '2025-07-31 16:34:08'),
-(613, 960, 33, '2025-05-03', '2025-05-10', '2025-05-05', 'returned', '2025-07-31 16:34:08', '2025-07-31 16:34:08'),
+(613, 960, 33, '2025-05-03', '2025-05-10', '2025-05-05', 'returned', '2025-07-31 16:34:08', '2025-07-31 16:34:08');
+INSERT INTO `loans` (`id`, `book_id`, `member_id`, `loan_date`, `return_date`, `actual_return_date`, `status`, `created_at`, `updated_at`) VALUES
 (614, 939, 45, '2025-06-12', '2025-06-19', NULL, 'borrowed', '2025-07-31 16:34:08', '2025-07-31 16:34:08'),
 (615, 978, 81, '2024-06-17', '2024-06-24', NULL, 'borrowed', '2025-07-31 16:34:08', '2025-07-31 16:34:08'),
 (616, 1272, 76, '2023-10-28', '2023-11-04', '2023-11-01', 'returned', '2025-07-31 16:34:08', '2025-07-31 16:34:08'),
@@ -2275,7 +2373,6 @@ INSERT INTO `loans` (`id`, `book_id`, `member_id`, `loan_date`, `return_date`, `
 (719, 277, 89, '2023-12-20', '2023-12-27', '2023-12-25', 'returned', '2025-07-31 16:34:08', '2025-07-31 16:34:08'),
 (720, 1339, 64, '2023-11-16', '2023-11-23', '2023-11-21', 'late', '2025-07-31 16:34:08', '2025-07-31 16:34:08'),
 (721, 479, 37, '2024-07-09', '2024-07-16', NULL, 'borrowed', '2025-07-31 16:34:08', '2025-07-31 16:34:08'),
-(722, 1502, 73, '2024-08-31', '2024-09-07', '2024-09-02', 'late', '2025-07-31 16:34:08', '2025-07-31 16:34:08'),
 (723, 313, 17, '2024-07-26', '2024-08-02', '2024-07-30', 'returned', '2025-07-31 16:34:08', '2025-07-31 16:34:08'),
 (724, 857, 20, '2025-03-05', '2025-03-12', '2025-03-06', 'returned', '2025-07-31 16:34:08', '2025-07-31 16:34:08'),
 (725, 1122, 111, '2024-01-09', '2024-01-16', '2024-01-16', 'returned', '2025-07-31 16:34:08', '2025-07-31 16:34:08'),
@@ -2353,7 +2450,6 @@ INSERT INTO `loans` (`id`, `book_id`, `member_id`, `loan_date`, `return_date`, `
 (797, 1342, 39, '2024-12-28', '2024-12-31', '2024-12-29', 'returned', '2025-07-31 16:36:51', '2025-07-31 16:36:51'),
 (798, 699, 121, '2025-04-06', '2025-04-09', NULL, 'borrowed', '2025-07-31 16:36:51', '2025-07-31 16:36:51'),
 (799, 1210, 55, '2024-08-02', '2024-08-05', '2024-08-04', 'late', '2025-07-31 16:36:51', '2025-07-31 16:36:51'),
-(800, 655, 89, '2025-01-01', '2025-01-04', '2025-01-02', 'late', '2025-07-31 16:36:51', '2025-07-31 16:36:51'),
 (801, 934, 72, '2025-04-04', '2025-04-07', NULL, 'borrowed', '2025-07-31 16:36:51', '2025-07-31 16:36:51'),
 (802, 1257, 69, '2025-07-10', '2025-07-13', NULL, 'borrowed', '2025-07-31 16:36:51', '2025-07-31 16:36:51'),
 (803, 300, 102, '2025-02-02', '2025-02-05', '2025-02-04', 'late', '2025-07-31 16:36:51', '2025-07-31 16:36:51'),
@@ -2615,12 +2711,12 @@ INSERT INTO `loans` (`id`, `book_id`, `member_id`, `loan_date`, `return_date`, `
 (1059, 1468, 63, '2024-11-29', '2024-12-02', NULL, 'borrowed', '2025-07-31 16:36:52', '2025-07-31 16:36:52'),
 (1060, 349, 46, '2024-09-21', '2024-09-24', NULL, 'borrowed', '2025-07-31 16:36:52', '2025-07-31 16:36:52'),
 (1061, 102, 93, '2025-04-20', '2025-04-23', NULL, 'borrowed', '2025-07-31 16:36:52', '2025-07-31 16:36:52'),
-(1062, 1311, 79, '2025-01-06', '2025-01-09', NULL, 'borrowed', '2025-07-31 16:36:52', '2025-07-31 16:36:52');
-INSERT INTO `loans` (`id`, `book_id`, `member_id`, `loan_date`, `return_date`, `actual_return_date`, `status`, `created_at`, `updated_at`) VALUES
+(1062, 1311, 79, '2025-01-06', '2025-01-09', NULL, 'borrowed', '2025-07-31 16:36:52', '2025-07-31 16:36:52'),
 (1063, 147, 102, '2024-11-08', '2024-11-11', NULL, 'borrowed', '2025-07-31 16:36:52', '2025-07-31 16:36:52'),
 (1064, 814, 33, '2025-04-13', '2025-04-16', '2025-04-14', 'late', '2025-07-31 16:36:52', '2025-07-31 16:36:52'),
 (1065, 883, 44, '2025-05-06', '2025-05-09', '2025-05-07', 'late', '2025-07-31 16:36:52', '2025-07-31 16:36:52'),
-(1066, 458, 26, '2025-01-26', '2025-01-29', '2025-01-28', 'returned', '2025-07-31 16:36:52', '2025-07-31 16:36:52'),
+(1066, 458, 26, '2025-01-26', '2025-01-29', '2025-01-28', 'returned', '2025-07-31 16:36:52', '2025-07-31 16:36:52');
+INSERT INTO `loans` (`id`, `book_id`, `member_id`, `loan_date`, `return_date`, `actual_return_date`, `status`, `created_at`, `updated_at`) VALUES
 (1067, 1208, 126, '2025-02-21', '2025-02-24', NULL, 'borrowed', '2025-07-31 16:36:52', '2025-07-31 16:36:52'),
 (1068, 787, 100, '2024-11-30', '2024-12-03', '2024-12-01', 'late', '2025-07-31 16:36:52', '2025-07-31 16:36:52'),
 (1069, 1004, 49, '2024-08-13', '2024-08-16', '2024-08-15', 'late', '2025-07-31 16:36:52', '2025-07-31 16:36:52'),
@@ -2635,7 +2731,6 @@ INSERT INTO `loans` (`id`, `book_id`, `member_id`, `loan_date`, `return_date`, `
 (1078, 396, 21, '2024-12-21', '2024-12-24', NULL, 'borrowed', '2025-07-31 16:36:52', '2025-07-31 16:36:52'),
 (1079, 1141, 64, '2025-01-15', '2025-01-18', '2025-01-16', 'late', '2025-07-31 16:36:52', '2025-07-31 16:36:52'),
 (1080, 248, 37, '2024-08-13', '2024-08-16', NULL, 'borrowed', '2025-07-31 16:36:52', '2025-07-31 16:36:52'),
-(1081, 1502, 68, '2025-01-10', '2025-01-13', '2025-01-12', 'returned', '2025-07-31 16:36:52', '2025-07-31 16:36:52'),
 (1082, 1261, 75, '2024-11-13', '2024-11-16', NULL, 'borrowed', '2025-07-31 16:36:52', '2025-07-31 16:36:52'),
 (1083, 1199, 80, '2024-10-25', '2024-10-28', '2024-10-28', 'returned', '2025-07-31 16:36:52', '2025-07-31 16:36:52'),
 (1084, 915, 15, '2025-06-11', '2025-06-14', '2025-06-12', 'returned', '2025-07-31 16:36:52', '2025-07-31 16:36:52'),
@@ -2974,6 +3069,55 @@ INSERT INTO `loans` (`id`, `book_id`, `member_id`, `loan_date`, `return_date`, `
 (1417, 1138, 69, '2025-07-02', '2025-07-05', '2025-07-04', 'returned', '2025-07-31 16:36:52', '2025-07-31 16:36:52'),
 (1418, 303, 37, '2024-12-22', '2024-12-25', '2024-12-25', 'late', '2025-07-31 16:36:52', '2025-07-31 16:36:52');
 
+--
+-- Triggers `loans`
+--
+DELIMITER $$
+CREATE TRIGGER `after_delete_loan` AFTER DELETE ON `loans` FOR EACH ROW BEGIN
+    UPDATE books
+    SET available = available + 1
+    WHERE id = OLD.book_id;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `after_insert_loan` AFTER INSERT ON `loans` FOR EACH ROW BEGIN
+    -- Mengurangi stok buku setelah peminjaman dilakukan
+    UPDATE books
+    SET available = available - 1
+    WHERE id = NEW.book_id;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `before_insert_loan` BEFORE INSERT ON `loans` FOR EACH ROW BEGIN
+    IF NEW.return_date < NEW.loan_date THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Tanggal pengembalian tidak boleh lebih kecil dari tanggal peminjaman';
+    END IF;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `log_loan_insert` AFTER INSERT ON `loans` FOR EACH ROW BEGIN
+    INSERT INTO loan_logs(loan_id, message)
+    VALUES (NEW.id, CONCAT('Peminjaman baru oleh member_id: ', NEW.member_id));
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `loan_logs`
+--
+
+CREATE TABLE `loan_logs` (
+  `id` bigint(20) NOT NULL,
+  `loan_id` bigint(20) DEFAULT NULL,
+  `message` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 -- --------------------------------------------------------
 
 --
@@ -3110,6 +3254,18 @@ INSERT INTO `members` (`id`, `name`, `email`, `phone_number`, `created_at`, `upd
 (124, 'Miss Audrey Mosciski V', 'windler.brandyn@example.org', '1-469-803-3647', '2025-07-31 16:26:59', '2025-07-31 16:26:59'),
 (125, 'Demarcus Wiegand', 'simone.schulist@example.com', '325-521-0080', '2025-07-31 16:26:59', '2025-07-31 16:26:59'),
 (126, 'Prof. Henderson Stiedemann', 'aditya.brown@example.net', '+17638620769', '2025-07-31 16:26:59', '2025-07-31 16:26:59');
+
+--
+-- Triggers `members`
+--
+DELIMITER $$
+CREATE TRIGGER `after_update_member` AFTER UPDATE ON `members` FOR EACH ROW BEGIN
+    INSERT INTO audit_log (action, table_name, record_id, old_data, new_data, change_date)
+    VALUES ('UPDATE', 'members', OLD.id, CONCAT('Name: ', OLD.name, ', Email: ', OLD.email),
+            CONCAT('Name: ', NEW.name, ', Email: ', NEW.email), NOW());
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -3297,6 +3453,26 @@ CREATE TABLE `password_reset_tokens` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `search_logs`
+--
+
+CREATE TABLE `search_logs` (
+  `id` bigint(20) NOT NULL,
+  `user_id` bigint(20) DEFAULT NULL,
+  `keyword` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `search_logs`
+--
+
+INSERT INTO `search_logs` (`id`, `user_id`, `keyword`, `created_at`) VALUES
+(4, 763, 'Agama', '2025-08-01 02:11:03');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `sessions`
 --
 
@@ -3314,6 +3490,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
+('aoblVoZRr8j6LN08MeKNoR6aoAmQJDpiLJIsGEur', 5, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiUVAyUzU4YU5tNjJGaXJxa0FJc2VETURCQkhZSjFEVU93ZnljSEJtRiI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjE6e3M6MzoidXJsIjtzOjMxOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvZGFzaGJvYXJkIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6NTt9', 1754014004),
 ('BziB3lEWzk2ZMtHB8yMC5iQPkY5y9zJkMGDfuMES', 5, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiSnVBSUExZm55UVc5aWlJd3BkbjR3OUFSWGtobVYyZ2tTakdBdUJlMyI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjE6e3M6MzoidXJsIjtzOjM0OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYm9va3M/cGFnZT01Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6NTt9', 1754006111);
 
 -- --------------------------------------------------------
@@ -3345,6 +3522,111 @@ INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `re
 (6, 'ikhsan', 'ikhsan@gmail.com', NULL, '$2y$12$C8z.KR1T/gcoC0Qugwk9NerJmgia3SrVrCS0ClKyJXGG0P93Kx.9W', NULL, '2025-07-31 16:01:15', '2025-07-31 16:01:15'),
 (7, 'Test User', 'test@example.com', '2025-07-31 16:13:52', '$2y$12$x8fvbl7zCipETvbCAf6.q.91hG7scXFp5ghlkzHC15Mjs7n0o6g92', 'q0DZCyRTkv', '2025-07-31 16:13:53', '2025-07-31 16:13:53');
 
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `view_buku_kategori_sains`
+-- (See below for the actual view)
+--
+CREATE TABLE `view_buku_kategori_sains` (
+`id` bigint(20) unsigned
+,`title` varchar(255)
+,`author` varchar(255)
+,`category_id` bigint(20) unsigned
+,`isbn` varchar(255)
+,`published_at` date
+,`pages` int(11)
+,`available` int(11)
+,`created_at` timestamp
+,`updated_at` timestamp
+);
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `view_buku_sains_tersedia`
+-- (See below for the actual view)
+--
+CREATE TABLE `view_buku_sains_tersedia` (
+`id` bigint(20) unsigned
+,`title` varchar(255)
+,`author` varchar(255)
+,`category_id` bigint(20) unsigned
+,`isbn` varchar(255)
+,`published_at` date
+,`pages` int(11)
+,`available` int(11)
+,`created_at` timestamp
+,`updated_at` timestamp
+);
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `view_buku_tersedia`
+-- (See below for the actual view)
+--
+CREATE TABLE `view_buku_tersedia` (
+`id` bigint(20) unsigned
+,`title` varchar(255)
+,`author` varchar(255)
+,`category_id` bigint(20) unsigned
+,`isbn` varchar(255)
+,`published_at` date
+,`pages` int(11)
+,`available` int(11)
+,`created_at` timestamp
+,`updated_at` timestamp
+);
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `view_info_buku`
+-- (See below for the actual view)
+--
+CREATE TABLE `view_info_buku` (
+`title` varchar(255)
+,`author` varchar(255)
+,`isbn` varchar(255)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `view_buku_kategori_sains`
+--
+DROP TABLE IF EXISTS `view_buku_kategori_sains`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `view_buku_kategori_sains`  AS SELECT `books`.`id` AS `id`, `books`.`title` AS `title`, `books`.`author` AS `author`, `books`.`category_id` AS `category_id`, `books`.`isbn` AS `isbn`, `books`.`published_at` AS `published_at`, `books`.`pages` AS `pages`, `books`.`available` AS `available`, `books`.`created_at` AS `created_at`, `books`.`updated_at` AS `updated_at` FROM `books` WHERE `books`.`category_id` = 13 ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `view_buku_sains_tersedia`
+--
+DROP TABLE IF EXISTS `view_buku_sains_tersedia`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `view_buku_sains_tersedia`  AS SELECT `view_buku_kategori_sains`.`id` AS `id`, `view_buku_kategori_sains`.`title` AS `title`, `view_buku_kategori_sains`.`author` AS `author`, `view_buku_kategori_sains`.`category_id` AS `category_id`, `view_buku_kategori_sains`.`isbn` AS `isbn`, `view_buku_kategori_sains`.`published_at` AS `published_at`, `view_buku_kategori_sains`.`pages` AS `pages`, `view_buku_kategori_sains`.`available` AS `available`, `view_buku_kategori_sains`.`created_at` AS `created_at`, `view_buku_kategori_sains`.`updated_at` AS `updated_at` FROM `view_buku_kategori_sains` WHERE `view_buku_kategori_sains`.`available` > 0WITH CASCADEDCHECK OPTION  ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `view_buku_tersedia`
+--
+DROP TABLE IF EXISTS `view_buku_tersedia`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `view_buku_tersedia`  AS SELECT `books`.`id` AS `id`, `books`.`title` AS `title`, `books`.`author` AS `author`, `books`.`category_id` AS `category_id`, `books`.`isbn` AS `isbn`, `books`.`published_at` AS `published_at`, `books`.`pages` AS `pages`, `books`.`available` AS `available`, `books`.`created_at` AS `created_at`, `books`.`updated_at` AS `updated_at` FROM `books` WHERE `books`.`available` > 0 ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `view_info_buku`
+--
+DROP TABLE IF EXISTS `view_info_buku`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `view_info_buku`  AS SELECT `books`.`title` AS `title`, `books`.`author` AS `author`, `books`.`isbn` AS `isbn` FROM `books` ;
+
 --
 -- Indexes for dumped tables
 --
@@ -3357,11 +3639,18 @@ ALTER TABLE `admins`
   ADD UNIQUE KEY `admins_username_unique` (`username`);
 
 --
+-- Indexes for table `audit_log`
+--
+ALTER TABLE `audit_log`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `books`
 --
 ALTER TABLE `books`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `books_category_id_foreign` (`category_id`);
+  ADD KEY `books_category_id_foreign` (`category_id`),
+  ADD KEY `idx_title_pages` (`title`,`pages`);
 
 --
 -- Indexes for table `cache`
@@ -3407,7 +3696,14 @@ ALTER TABLE `job_batches`
 ALTER TABLE `loans`
   ADD PRIMARY KEY (`id`),
   ADD KEY `loans_book_id_foreign` (`book_id`),
-  ADD KEY `loans_member_id_foreign` (`member_id`);
+  ADD KEY `loans_member_id_foreign` (`member_id`),
+  ADD KEY `idx_member_book` (`member_id`,`book_id`);
+
+--
+-- Indexes for table `loan_logs`
+--
+ALTER TABLE `loan_logs`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `members`
@@ -3435,6 +3731,13 @@ ALTER TABLE `password_reset_tokens`
   ADD PRIMARY KEY (`email`);
 
 --
+-- Indexes for table `search_logs`
+--
+ALTER TABLE `search_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_user_keyword` (`user_id`,`keyword`);
+
+--
 -- Indexes for table `sessions`
 --
 ALTER TABLE `sessions`
@@ -3460,10 +3763,16 @@ ALTER TABLE `admins`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
+-- AUTO_INCREMENT for table `audit_log`
+--
+ALTER TABLE `audit_log`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `books`
 --
 ALTER TABLE `books`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1516;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1517;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -3490,6 +3799,12 @@ ALTER TABLE `loans`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1419;
 
 --
+-- AUTO_INCREMENT for table `loan_logs`
+--
+ALTER TABLE `loan_logs`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `members`
 --
 ALTER TABLE `members`
@@ -3506,6 +3821,12 @@ ALTER TABLE `member_profiles`
 --
 ALTER TABLE `migrations`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+--
+-- AUTO_INCREMENT for table `search_logs`
+--
+ALTER TABLE `search_logs`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `users`
